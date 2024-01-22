@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<ul class="uu">
+  
+</ul>
+
+
+@section Scripts{
+    <script>
+        //建立promise
+        function show(data) {
+            const promise = new Promise((resolve, reject) => {
+                setTimeout(() => resolve(data), 1000)
+            });
+            return promise;
+        }
+
+        (async () => {
+            let data = await show("A");
+            console.log(data);
+            data = await show("B");
+            console.log(data);
+            data = await show("C");
+            console.log(data);
+            console.log("end");
+        })();
+
+        const emps = [{ "name": "Tom", "workYears": 3, "salary": 35000 },
+        { "name": "Jack", "workYears": 5, "salary": 40000 },
+        { "name": "Mary", "workYears": 7, "salary": 45000 }];
+
+        const htmlEmps = emps.map((emp) => {
+            const { name, workYears, salary } = emp;
+            return (
+                `<li>${name},${workYears},${salary}</li>`
+            )
+        })
+
+        const uL = document.querySelector(".uu")
+        uL.innerHTML = htmlEmps.join("");
+
+
+        // show("A")
+        //     .then((data) => {
+        //         console.log(data)
+        //         return show("B")
+        //     })
+        //     .then((data) => {
+        //         console.log(data)
+        //         return show("C")
+        //     })
+
+
+        // //建立一個Promise物件
+        // const promise = new Promise((resolve, reject) => {
+        //     //非同步程式碼
+        //     const num = Math.random() > 0.5 ? 1 : 0;
+
+        //     if (num) {
+        //         resolve("成功 > 0.5");
+        //     } else {
+        //         reject("失敗 < 0.5")
+        //     }
+
+
+        // });
+
+        //使用 Promise
+        // promise
+        //     .then((data) => {
+        //         console.log(data);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //     })
+        //     .finally(() => {
+        //         console.log("END");
+        //     })
+
+
+
+                // setTimeout(function () {
+                //     console.log('A');
+                // }, 1000);
+                // setTimeout(function () {
+                //     console.log('B');
+                // }, 1000);
+                // setTimeout(function () {
+                //     console.log('C');
+                // }, 1000);
+
+                // setTimeout(function () {
+                //     console.log('A');
+                // }, 3000);
+                // setTimeout(function () {
+                //     console.log('B');
+                // }, 2000);
+                // setTimeout(function () {
+                //     console.log('C');
+                // }, 1000);
+
+
+                // setTimeout(function () {
+                //     console.log('A');
+                //     setTimeout(function () {
+                //         console.log('B');
+                //         setTimeout(function () {
+                //             console.log('C');
+                //         }, 1000);
+                //     }, 1000);
+                // }, 1000);
+
+
+
+
+    </script>
+}
+   
+
+    
