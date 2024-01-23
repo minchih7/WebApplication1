@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+@section Scripts{
+    <script>
+        (async () => {
+            // const url = '@Url.Action("register","api")?name=Jack&age=27'
+            const url = '@Url.Action("register","api")'  
+            const response = await fetch(url)
+            const datas = await response.text();
+            console.log(datas);
+        })()       
+    </script>
+}
