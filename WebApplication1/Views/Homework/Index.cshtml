@@ -3,9 +3,32 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<body></body>
+<style>
+    .card-group {
+        display: flex;
+        flex-wrap: wrap;
+       
+    }
+
+    .card {
+        
+       
+        min-width:200px;
+    }
+
+    .card-img-top {
+       
+        
+    }
+</style>
+
+<h1>景點</h1>
+
+
+<div class="card-group"></div>
+
+
 
 
 
@@ -13,22 +36,24 @@
     <script src="~/js/travel.js"></script>
     <script>
         const spotsJson = spots.CommonFormat.Section;
-        const htmlspots = spotsJson.map((spot)=>{
-            const { xbody, file} = spot;
-            console.log(spot)
+        const htmlspots = spotsJson.map((spot) => {
+            const { xbody, file, stitle } = spot;
+            //console.log(spot)
+            const imageHtml = file.img.length > 0 ? file.img[0].text : file.img.text;
+
             return (
-                `
-                <div class="card" style="width: 18rem;">
-                                    <img src="${file}" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <p class="card-text">${xbody}</p>
-                        </div>
+                `<div class= "card">
+                         <img class="card-img-top object-fit-cover" src = "${imageHtml}" alt = "Card image cap" >
+                 <div class="card-body" >
+                 <h5 class="card-title" > ${ stitle } </h5>
+                 <p class="card-text"> ${xbody } </p>
+                 </div>
                 </div>
                 `
-                
+
             )
-        })
-        const bd = document.querySelector("body");
+        });
+        const bd = document.querySelector(".card-group");
         bd.innerHTML = htmlspots.join("")
       
     </script>
