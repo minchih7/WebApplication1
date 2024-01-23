@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "First";
+}
+
+<h1>First</h1>
+<button id="button1" class="btn btn-primary">Ajax</button>
+<button id="button2" class="btn btn-danger">停</button>
+<img src="~/image/Settings.gif" id="image1" style="display:none"/>
+<div id="div1" class="alert"></div>
+
+@section Scripts{
+    <script>
+    const btn = document.querySelector("#button1");
+    const btn2 = document.querySelector("#button2");
+    const theDiv = document.querySelector("#div1");
+    const imgLoader = document.querySelector('#image1');
+        let abortController;
+        btn2.addEventListener('click', () => {
+            if (abortController) {
+                abortController.abort();
+            }
+        })
+        btn.addEventListener('click', async () => {
+        
+            try {
+                imgLoader.style.display = "inline";
+                btn.setAttribute("disabled","disabled")
+                abortController = new AbortController();
+                const signal = abortController.signal;
+                
+                //Ajax
+                const respone = await fetch('@Url.Content("~/api/index")',{signal})
+
+                if (!respone.ok) {
+                    throw new Error(`${respone.status}`)
+                }
+                const data = await respone.text();
+                theDiv.innerHTML = `<h2>${data}</h2>`;
+            } catch (err) {
+                theDiv.innerHTML = `<h2>${err}</h2>`;
+            } finally{
+                imgLoader.style.display = "none";
+                btn.removeAttribute("disabled");
+            }
+
+
+                // fetch('@Url.Content("~/api/index")')
+            // C)')
+            // .then(response => { return response.text(); })
+            //     .then(data => { theDiv.innerHTML = `<h2>${data}</h2>`; });
+        
+    })
+    </script>
+
+}
+

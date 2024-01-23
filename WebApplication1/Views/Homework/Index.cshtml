@@ -5,10 +5,32 @@
 
 <h1>Index</h1>
 
+<body></body>
+
+
+
 @section Scripts{
     <script src="~/js/travel.js"></script>
     <script>
-        console.log(spots.CommonFormat.Section);
+        const spotsJson = spots.CommonFormat.Section;
+        const htmlspots = spotsJson.map((spot)=>{
+            const { xbody, file} = spot;
+            console.log(spot)
+            return (
+                `
+                <div class="card" style="width: 18rem;">
+                                    <img src="${file}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <p class="card-text">${xbody}</p>
+                        </div>
+                </div>
+                `
+                
+            )
+        })
+        const bd = document.querySelector("body");
+        bd.innerHTML = htmlspots.join("")
+      
     </script>
 
 }
