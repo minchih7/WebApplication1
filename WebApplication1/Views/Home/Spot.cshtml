@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewData["Title"] = "Spot";
+}
+
+<h1>Spot</h1>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6"></div>
+    <div class="col-3"></div>
+
+</div>
+<div class="row row-cols-1 row-cols-md-3 g-4" id="spots">
+
+@section Scripts{
+    <script>
+        const searchData = {
+            "categoryId": 0,
+
+            "keyword": "",
+
+            "page": 1,
+
+            "pageSize": 9,
+            "sortType": "asc",
+
+            "sortBy": ""
+        }
+
+
+        const divSpots = document.querySelector('#spots');
+
+        const loadSpots = async () => {
+            const response = await fetch('@Url.Content("~/api/spot")', {
+                'method': 'POST',
+                'body': JSON.stringify(searchData),
+                'headers': {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(response)
+            const datas = await response.json();
+            //console.log(datas);
+
+                const cardSpots = datas.spotsResult.map(spot => {
+                const { spotId, spotTitle, spotDescription, spotImage, address } = spot;
+                return (
+                    `
+                                     <div class="col">
+                        <div class="card h-100">
+                                            <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+                            <div class="card-body">
+                                                <h5 class="card-title">${spotId} - ${spotTitle}</h5>
+                                                        <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}...</p>
+                            </div>
+                            <div class="card-footer">
+                                        <small class="text-body-secondary">${address}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                            `
+                )
+            });
+            divSpots.innerHTML = cardSpots;
+
+        }
+        loadSpots();
+    </script>
+}
+
