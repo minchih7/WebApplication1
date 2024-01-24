@@ -48,20 +48,20 @@
             event.preventDefault(); //防止submit送出的功能
             const formData = new FormData(theForm);
             const url = '@Url.Content("~/api/register")';
-            const reposone = await fetch(url, {
+            const response = await fetch(url, {
                 method: 'POST',
                 body:formData
             });
-            const datas = await reposone.text();
-            divInfo.innerHTML = datas
+            const datas = await response.text();
+            divInfo.innerHTML = datas;
            
             
             
-            // formData.append("city","中壢")
-            for (const pair of formData.entries()) {
-                console.log(pair[0])
-                console.log(pair[1])
-            }
+            // // formData.append("city","中壢")
+            // for (const pair of formData.entries()) {
+            //     console.log(pair[0])
+            //     console.log(pair[1])
+            // }
 
 
 

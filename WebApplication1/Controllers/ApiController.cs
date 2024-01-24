@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing.Constraints;
 using WebApplication1.Models;
 using WebApplication1.Models.DTO;
 
@@ -56,17 +57,36 @@ namespace WebApplication1.Controllers
         //    }
         //    return Content($"hello{name},age=>{age}");
         //}
-
+        [HttpPost]
         public IActionResult Register(Member member,IFormFile Avatar) 
         {
+            string fileName = "";
             //if (string.IsNullOrEmpty(_user.Name))
             //{
             //    _user.Name = "Guest";
             //}
             //return Content($"Hello{_user.Name},{_user.Age}歲了,電子郵件是{_user.Email},{_user.Avatar?.FileName}-{_user.Avatar?.Length}-{_user.Avatar?.ContentType}");
-            if (Avatar == null) return Content("請上船檔案");
+            if (Avatar == null) return Content("請上傳檔案");
+            else { fileName = Avatar.FileName; }
 
-            return View();
+            string uploadPath = Path.Combine(_host.WebRootPath, "upload", fileName);
+            using (var fileStream = new FileStream(uploadPath, FileMode.Create))
+            {
+                Avatar?.CopyTo(fileStream);
+            }
+            byte[]? imageByte = null;
+            using(var memoryStream = new MemoryStream())
+            {
+                Avatar?.CopyTo(memoryStream);
+                imageByte = memoryStream.ToArray();
+            }
+            member.FileName = fileName;
+            member.FileData= imageByte;
+            
+            _dbContext.Members.Add(member);
+            _dbContext.SaveChanges();
+
+            return Content("新增完成");
             
             
         }
