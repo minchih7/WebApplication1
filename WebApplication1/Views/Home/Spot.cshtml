@@ -10,24 +10,25 @@
     <div class="col-3"></div>
 
 </div>
+<nav aria-label="...">
+    <ul class="pagination pagination-sm">
+     
+    </ul>
+</nav>
 <div class="row row-cols-1 row-cols-md-3 g-4" id="spots"></div>
 
 @section Scripts{
     <script>
         const searchData = {
             "categoryId": 0,
-
-            "keyword": "",
-
+            "keyword":"" ,
             "page": 1,
-
             "pageSize": 9,
             "sortType": "asc",
-
             "sortBy": ""
         }
 
-
+        const ulPaging = document.querySelector('.pagination')
         const divSpots = document.querySelector('#spots');
 
         const loadSpots = async () => {
@@ -40,7 +41,13 @@
             });
             console.log(response)
             const datas = await response.json();
-            //console.log(datas);
+
+            let lipPaging = "";
+            for (let i = 1, max = datas.totalPages; i <= max; i++) {
+                lipPaging += `<li class="page-item" onclick="pageHandler(${i})"><a class="page-link" href="#">${i}</a></li>`
+            }
+            ulPaging.innerHTML = lipPaging;
+            
 
                 const cardSpots = datas.spotsResult.map(spot => {
                 const { spotId, spotTitle, spotDescription, spotImage, address } = spot;
@@ -65,6 +72,12 @@
             divSpots.innerHTML = cardSpots.join("");
 
         }
+        //分頁
+        const pageHandler = (page) => {
+            searchData.page = page;
+            loadSpots();
+        }
+
         loadSpots();
     </script>
 }

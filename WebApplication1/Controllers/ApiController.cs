@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
+using NuGet.Protocol;
 using WebApplication1.Models;
 using WebApplication1.Models.DTO;
 
@@ -133,6 +134,14 @@ namespace WebApplication1.Controllers
 
         }
 
+        public IActionResult SpotsTitle(string keyword)
+        {
+            var spots = _dbContext.Spots.Where(s => s.SpotTitle.Contains(keyword)).Select(s => s.SpotTitle).Take(7);
+
+            return Json(spots);
+            
+            
+        }
         
     }
 }

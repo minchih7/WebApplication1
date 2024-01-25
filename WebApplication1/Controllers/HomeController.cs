@@ -48,5 +48,14 @@ namespace WebApplication1.Controllers
 		{
 			return View();
 		}
+		public IActionResult AutoComplete()
+		{
+			return View();
+		}
+
+		public IActionResult Categoryapi()
+		{
+			return View();
+		}
 	}
 }
