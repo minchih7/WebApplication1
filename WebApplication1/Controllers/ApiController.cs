@@ -61,12 +61,14 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Register(Member member,IFormFile Avatar) 
         {
+            string memberName = "";
             string fileName = "";
             //if (string.IsNullOrEmpty(_user.Name))
             //{
             //    _user.Name = "Guest";
             //}
             //return Content($"Hello{_user.Name},{_user.Age}歲了,電子郵件是{_user.Email},{_user.Avatar?.FileName}-{_user.Avatar?.Length}-{_user.Avatar?.ContentType}");
+            
             if (Avatar == null) return Content("請上傳檔案");
             else { fileName = Avatar.FileName; }
 
@@ -81,6 +83,7 @@ namespace WebApplication1.Controllers
                 Avatar?.CopyTo(memoryStream);
                 imageByte = memoryStream.ToArray();
             }
+            member.Name = memberName;
             member.FileName = fileName;
             member.FileData= imageByte;
             
