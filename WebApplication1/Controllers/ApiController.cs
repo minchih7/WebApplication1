@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.Connections;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
 using NuGet.Protocol;
+using System.Security.Cryptography;
 using WebApplication1.Models;
 using WebApplication1.Models.DTO;
 
@@ -28,14 +30,16 @@ namespace WebApplication1.Controllers
 
         }
 
-       
-
-        
-
+    
         public IActionResult Cities()
         {
             var cities = _dbContext.Addresses.Select(x => x.City).Distinct();
             return Json(cities);
+        }
+        public IActionResult GetCategories()
+        {
+            var categories = _dbContext.Categories.ToList();
+            return Json(categories);
         }
 
         public IActionResult Avatar(int id=1) 
@@ -83,6 +87,22 @@ namespace WebApplication1.Controllers
                 Avatar?.CopyTo(memoryStream);
                 imageByte = memoryStream.ToArray();
             }
+            //密碼加鹽          
+            // 設定 PBKDF2 參數
+            int iterations = 10000;
+            int numBytesRequested = 32;
+            //產生鹽
+            byte[] salt = GenerateRandomSalt();
+            // 使用 PBKDF2 加密
+            byte[] hashedPassword = KeyDerivation.Pbkdf2(member.Password, salt, KeyDerivationPrf.HMACSHA512, iterations, numBytesRequested);
+
+            // salt 和 Password 可以被儲存為位元組陣列或轉換成十六進位字串
+            member.Salt = Convert.ToBase64String(salt);
+            member.Password = Convert.ToBase64String(hashedPassword);
+
+   
+
+
             member.Name = memberName;
             member.FileName = fileName;
             member.FileData= imageByte;
@@ -99,7 +119,7 @@ namespace WebApplication1.Controllers
         public IActionResult Spot([FromBody]SearchDto _search)
         {
             //根據分類取景點資料
-            var spots = _search.CategoryId == 0? _dbContext.SpotImagesSpots:_dbContext.SpotImagesSpots.Where(s=>s.CategoryId== _search.CategoryId);
+            var spots = _search.CategoryId == 0 ? _dbContext.SpotImagesSpots : _dbContext.SpotImagesSpots.Where(s => s.CategoryId == _search.CategoryId);
 
             if (!string.IsNullOrEmpty(_search.Keyword))
             {
@@ -109,14 +129,20 @@ namespace WebApplication1.Controllers
             switch (_search.SortBy)
             {
                 case "spotTitle":
-                    spots = _search.SoryType == "asc" ? spots.OrderBy(s => s.SpotTitle) : spots.OrderByDescending(s => s.SpotTitle);
+                    spots = _search.SortType == "asc"? spots.OrderBy(s => s.SpotTitle) : spots.OrderByDescending(s => s.SpotTitle);
+                    break;
+                case "spotDescription":
+                    spots =_search.SortType == "asc"? spots.OrderBy(s=> s.SpotDescription):spots.OrderByDescending(s=> s.SpotDescription);
                     break;
                 case "categoryId":
-                    spots = _search.SoryType == "asc" ? spots.OrderBy(s => s.CategoryId) : spots.OrderByDescending(s => s.CategoryId);
+                    spots = _search.SortType == "asc"? spots.OrderBy(s => s.CategoryId) : spots.OrderByDescending(s => s.CategoryId);
+                    break;
+                case "spotId":
+                    spots = _search.SortType == "asc"? spots.OrderBy(s => s.SpotId) : spots.OrderByDescending(s => s.SpotId);
                     break;
                 default:
-                    spots = _search.SoryType =="asc"?
-                        spots.OrderBy(s=>s.SpotId):spots.OrderByDescending
+                    spots = _search.SortType == "asc"?
+                        spots.OrderBy(s=>s.SpotId):spots.OrderBy
                         (s=>s.SpotId);
                     break;
             }
@@ -145,6 +171,22 @@ namespace WebApplication1.Controllers
             
             
         }
-        
+        public IActionResult CheckAccountAction(string account) 
+        {
+            bool check  = _dbContext.Members.Any(acc => acc.Name == account);
+            return Json(check);
+        }
+        // 產生鹽
+        private static byte[] GenerateRandomSalt()
+        {
+            byte[] salt = new byte[16]; // 16位元組的加鹽
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
+            return salt;
+        }
+
+
     }
 }

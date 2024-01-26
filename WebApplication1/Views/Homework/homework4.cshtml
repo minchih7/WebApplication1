@@ -2,6 +2,192 @@
 @{
     ViewData["Title"] = "homework4";
 }
+<style>
+    #inputKeyword{
+        margin-bottom:20px;
+    }
+</style>
 
 <h1>homework4</h1>
+
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6"></div>
+    <div class="col-3"></div>
+
+</div>
+<nav aria-label="...">
+    <div class="d-flex justify-content-center">
+        <ul class="pagination pagination-sm"></ul>
+    </div>
+
+        <div class="col-3">
+        <input type="search" id="inputKeyword" class="form-control" placeholder="景點搜尋" />
+        </div>
+    <div class="row mb-3">
+        <div class="col-2">
+            <select class="form-select" aria-label="Default select example" id="selectpages">
+            <option value=9 selected>每頁九筆資料</option>
+            <option value="3">每頁三筆資料</option>
+                <option value="4">每頁四筆資料</option>
+                <option value="7">每頁七筆資料</option>
+
+        </select>
+        </div>
+        <div class="col-2">
+        <select class="form-select" aria-label="Default select example" id="selectsort">
+            <option selected disabled style="display:none" >--請選擇--</option>
+            
+        </select>
+        </div> 
+        
+    </div>
+    <ul class="pagination pagination-lg d-flex justify-content-center" id="categorypage">
+        <li class="page-item active" aria-current="page">
+            <span class="page-link">1</span>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">種類1</a></li>
+        <li class="page-item"><a class="page-link" href="#">種類2</a></li>
+    </ul>
+
+</nav>
+<div class="row row-cols-1 row-cols-md-3 g-4" id="spots"></div>
+
+@section Scripts {
+    <script>
+        const searchData = {
+            "categoryId": 0,
+            "keyword": "",
+            "page": 1,
+            "pageSize": 9,
+            "sortType": "",   //soryType soryType soryType......
+            "sortBy": ""
+        }
+        const sortOption = {
+            "spotTitle": "景點標題",
+            "spotId": "景點編號",
+            "spotDescription": "景點描述",
+        }
+
+        const ulPaging = document.querySelector('.pagination')
+        const divSpots = document.querySelector('#spots');
+        const searchBox = document.querySelector('#inputKeyword');
+        const categoryPaging = document.querySelector('#categorypage')
+        const selectSort = document.querySelector('#selectsort')
+        const selectpages = document.querySelector('#selectpages');
+        
+        (async () => {
+            const response = await fetch('@Url.Content("~/api/GetCategories")')
+            const datasCategories = await response.json();
+            const opCategories = datasCategories.map(cate => `<div><button class="cate" value=${cate.categoryId}>${cate.categoryName}</button></div>`)
+            categoryPaging.innerHTML = opCategories.join("");
+            const category = document.querySelectorAll('.cate');  //待html插入完再選取、綁事件
+            category.forEach(cate => {
+                cate.addEventListener('click', (event) => {
+                  //console.log(event.target.value)
+                    searchData.categoryId = event.target.value;
+                    loadSpots();
+                });
+            });
+
+        })();
+
+        
+
+
+        Object.entries(sortOption).forEach(([key, value]) => {
+            const asc = document.createElement('option')
+            asc.value = key + '_asc';
+            asc.textContent = value + "(升冪)"    //sortOption的value顯示在選單上
+            selectSort.appendChild(asc);
+
+            const desc = document.createElement('option')
+            desc.value = key + '_desc';
+            desc.textContent= value + "(降冪)"   
+            selectSort.appendChild(desc);
+        })
+        selectpages.addEventListener('change',(event)=>{
+            searchData.pageSize=event.target.value
+            console.log(event.target.value)
+            loadSpots();
+        })
+
+        selectSort.addEventListener('change', (event) => {
+
+            const [sortBy, sortType] = event.target.value.split("_");
+            //console.log(event.target.value)
+
+            Object.assign(searchData, { sortBy, sortType })
+            console.log(searchData)
+            loadSpots();
+        })
+
+      
+        const loadCategories = async () => {
+            const response = await fetch('@Url.Content("~/api/GetCategories")')
+            const datasCategories = await response.json();
+            console.log(datasCategories)
+            console.log(response)
+        }
+        loadCategories();
+        const loadSpots = async () => {
+            const response = await fetch('@Url.Content("~/api/spot")', {
+                'method': 'POST',
+                'body': JSON.stringify(searchData),
+                'headers': {
+                    'Content-Type': 'application/json'
+                }
+            });
+            //console.log(response)
+            const datas = await response.json();
+
+            let lipPaging = "";
+            for (let i = 1, max = datas.totalPages; i <= max; i++) {
+                lipPaging += `<li class="page-item" onclick="pageHandler(${i})"><a class="page-link" href="#">${i}</a></li>`
+            }
+            ulPaging.innerHTML = lipPaging;
+
+            const cardSpots = datas.spotsResult.map(spot => {
+                const { spotId, spotTitle, spotDescription, spotImage, address } = spot;
+                return (
+                    `
+                                             <div class="col">
+                                <div class="card h-100">
+                                                    <img src="${spotImage}" class="card-img-top" alt="${spotTitle}">
+                                    <div class="card-body">
+                                                        <h5 class="card-title">${spotId} - ${spotTitle}</h5>
+                                                                <p class="card-text">${spotDescription.length <= 100 ? spotDescription : spotDescription.substring(0, 100)}...</p>
+                                    </div>
+                                    <div class="card-footer">
+                                                <small class="text-body-secondary">${address}</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                                    `
+                )
+            });
+            divSpots.innerHTML = cardSpots.join("");
+
+
+            
+        }
+        searchBox.addEventListener('keydown', event => {
+            if (event.which === 13) { 
+            searchData.keyword = event.target.value;
+            searchData.page = 1;
+            loadSpots();
+            }
+        })
+        //分頁
+        const pageHandler = (page) => {
+            searchData.page = page;
+            loadSpots();
+        }
+        searchBox.addeve
+       
+
+        loadSpots();
+    </script>
+}
 

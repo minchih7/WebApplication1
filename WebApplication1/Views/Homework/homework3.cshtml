@@ -5,3 +5,83 @@
 
 <h1>homework3</h1>
 
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6">
+        <form id="userForm">
+            <div class="mb-3">
+                <label for="userName" class="form-label">姓名：</label>
+                <input type="text" class="form-control" id="userName" name="Name">
+                <div id="NameMesssage" class="alert alert-warning"></div>
+            </div>
+            <div class="mb-3">
+                <label for="UserEmail" class="form-label">電子郵件：</label>
+                <input type="email" class="form-control" id="UserEmail" name="Email">
+            </div>
+            <div class="mb-3">
+                <label for="Password" class="form-label">密碼：</label>
+                <input type="password" class="form-control" id="Password" name="Password">
+            </div>
+            <div class="mb-3">
+                <label for="ConfirmPassword" class="form-label">密碼確認：</label>
+                <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword">
+
+            </div>
+            <div class="mb-3">
+                <label for="userAge" class="form-label">年紀：</label>
+                <input type="number" class="form-control" id="userAge" name="Age">
+            </div>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">頭像：</label>
+                <input class="form-control" type="file" id="formFile" name="avatar">
+            </div>
+
+            <button id="button1" type="submit" class="btn btn-primary">送出</button>
+        </form>
+        <div class="alert alert-info" id="div1"></div>
+    </div>
+    <div class="col-3">
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const btn = document.querySelector('#button1');
+        const theDiv = document.querySelector('#div1')
+        const checkAccount = document.querySelector("#NameMesssage")
+        const txtName = document.querySelector("#userName")
+
+        btn.addEventListener('click', async (event) => {
+            event.preventDefault(); //防止預設行為的發生
+            const formData = new FormData(document.querySelector('#userForm'));
+            const url = '@Url.Content("~/api/register")'
+            const response = await fetch(url, {
+                body: formData,
+                method: 'POST',
+            })
+            const data = await response.text()
+            theDiv.innerHTML = data;
+        })
+
+        txtName.addEventListener('input', async (event) => {
+            //console.log(event.target.value)
+
+            const input = txtName.value;
+            if (!input) {
+                checkAccount.textContent = "";
+            }
+            else {
+                const response = await fetch(`@Url.Content("~/api/CheckAccountAction")?account=${input}`);
+                const datas = await response.text();
+                const datasTorF = datas.toLowerCase() === "true";
+                console.log(datasTorF);
+                datasTorF ? (checkAccount.textContent = "帳號已存在", checkAccount.style.visibility = "visible", checkAccount.style.color = "red") : (checkAccount.textContent = "帳號可使用", checkAccount.style.visibility = "visible", checkAccount.style.color = "green");
+
+            }
+
+
+        });
+
+
+    </script>
+}

@@ -11,6 +11,7 @@
             <div class="mb-3">
                 <label for="userName" class="form-label">姓名：</label>
                 <input type="text" class="form-control" id="userName" name="Name">
+                <label class="checkAccount mt-1"></label>
             </div>
             <div class="mb-3">
                 <label for="UserEmail" class="form-label">電子郵件：</label>
@@ -42,6 +43,7 @@
         const txtAge = document.querySelector("#userAge");
         const divInfo = document.querySelector("#div1");
         const theForm = document.querySelector("#userForm");
+        const checkAccount = document.querySelector(".checkAccount")
 
 
         btn.addEventListener('click', async (event) => {
@@ -58,7 +60,23 @@
         })
         
         txtName.addEventListener('input', async (event) => {
-            console.log(event.data)
+            //console.log(event.target.value)
+            
+            const input = txtName.value;
+            if (!input) {
+                checkAccount.style.visibility = "hidden";
+            }
+            else 
+            {
+                const response = await fetch(`@Url.Content("~/api/CheckAccountAction")?account=${input}`);
+                const datas = await response.text();
+                const datasTorF = datas.toLowerCase() === "true";
+                console.log(datasTorF);
+                datasTorF ? (checkAccount.textContent = "帳號已存在", checkAccount.style.visibility = "visible", checkAccount.style.color = "red") : (checkAccount.textContent = "帳號可使用", checkAccount.style.visibility = "visible", checkAccount.style.color = "green");
+                 
+            }
+           
+
         });
         
 

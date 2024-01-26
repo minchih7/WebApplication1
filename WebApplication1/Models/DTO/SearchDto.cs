@@ -7,7 +7,8 @@
         public int? CategoryId { get; set; } = 0; //
         //排序相關
         public string? SortBy {  get; set; }
-        public string? SoryType { get; set; } = "asc"; //desc
+        public string? SortType { get; set; } //desc
+
         //分頁相關
         public int? Page { get; set; } = 1;
         public int? PageSize { get; set; } = 9;
