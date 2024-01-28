@@ -44,18 +44,27 @@
         const divInfo = document.querySelector("#div1");
         const theForm = document.querySelector("#userForm");
         const checkAccount = document.querySelector(".checkAccount")
+        let isAccountExist = true;
 
 
         btn.addEventListener('click', async (event) => {
+            console.log(isAccountExist);
             event.preventDefault(); //防止submit送出的功能
-            const formData = new FormData(theForm);
-            const url = '@Url.Content("~/api/register")';
-            const response = await fetch(url, {
-                method: 'POST',
-                body: formData
-            });
-            const datas = await response.text();
-            divInfo.innerHTML = datas;
+            if (isAccountExist==false) {
+				const formData = new FormData(theForm);
+				const response = await fetch(`@Url.Content("~/api/register")`, {
+					method: 'POST',
+					body: formData
+				});
+				const datas = await response.text();
+				divInfo.innerHTML = datas;
+                console.log(datas);
+			}
+			else {
+                alert("帳號已存在，請使用其他帳號");
+                return;
+
+			}
        
         })
         
@@ -71,8 +80,8 @@
                 const response = await fetch(`@Url.Content("~/api/CheckAccountAction")?account=${input}`);
                 const datas = await response.text();
                 const datasTorF = datas.toLowerCase() === "true";
-                console.log(datasTorF);
-                datasTorF ? (checkAccount.textContent = "帳號已存在", checkAccount.style.visibility = "visible", checkAccount.style.color = "red") : (checkAccount.textContent = "帳號可使用", checkAccount.style.visibility = "visible", checkAccount.style.color = "green");
+                //console.log(datasTorF);
+                datasTorF ? (checkAccount.textContent = "帳號已存在", checkAccount.style.visibility = "visible", checkAccount.style.color = "red", isAccountExist = true) : (checkAccount.textContent = "帳號可使用", checkAccount.style.visibility = "visible", checkAccount.style.color = "green", isAccountExist = false);
                  
             }
            

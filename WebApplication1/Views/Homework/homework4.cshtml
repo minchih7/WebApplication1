@@ -46,8 +46,6 @@
         <li class="page-item active" aria-current="page">
             <span class="page-link">1</span>
         </li>
-        <li class="page-item"><a class="page-link" href="#">種類1</a></li>
-        <li class="page-item"><a class="page-link" href="#">種類2</a></li>
     </ul>
 
 </nav>
@@ -79,7 +77,7 @@
         (async () => {
             const response = await fetch('@Url.Content("~/api/GetCategories")')
             const datasCategories = await response.json();
-            const opCategories = datasCategories.map(cate => `<div><button class="cate" value=${cate.categoryId}>${cate.categoryName}</button></div>`)
+            const opCategories = datasCategories.map(cate => `<div class="me-3"><button class="cate btn-info rounded-3" value=${cate.categoryId}>${cate.categoryName}</button></div>`)
             categoryPaging.innerHTML = opCategories.join("");
             const category = document.querySelectorAll('.cate');  //待html插入完再選取、綁事件
             category.forEach(cate => {

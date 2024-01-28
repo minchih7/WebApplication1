@@ -25,7 +25,11 @@
             <div class="mb-3">
                 <label for="ConfirmPassword" class="form-label">密碼確認：</label>
                 <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword">
-
+            </div>
+            <div>
+                <label class="samepwd text-danger" style="visibility:hidden">
+                    
+                </label>
             </div>
             <div class="mb-3">
                 <label for="userAge" class="form-label">年紀：</label>
@@ -50,6 +54,29 @@
         const theDiv = document.querySelector('#div1')
         const checkAccount = document.querySelector("#NameMesssage")
         const txtName = document.querySelector("#userName")
+        const password = document.querySelector("#Password")
+        const confirmPassword = document.querySelector("#ConfirmPassword")
+        const passwordMessage = document.querySelector(".samepwd");
+        
+        confirmPassword.addEventListener('input', () => {
+            if (confirmPassword.value === "") {
+                passwordMessage.textContent = "確認密碼不可為空"
+                passwordMessage.style.visibility = "visible"
+                btn.disabled = true;
+           
+            }
+            else if (password.value!== confirmPassword.value)
+            {
+                passwordMessage.textContent = "密碼不相同"
+                passwordMessage.style.visibility = "visible"
+                btn.disabled=true;
+            }
+            else 
+            {
+                passwordMessage.style.visibility = "hidden"
+                btn.disabled = false;
+            }
+        });
 
         btn.addEventListener('click', async (event) => {
             event.preventDefault(); //防止預設行為的發生
